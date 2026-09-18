@@ -120,7 +120,7 @@ button, input, textarea { font: inherit; color: inherit; }
 .holo__layer.ghost { opacity: .22; filter: none; }
 /* 두 사람 사이 핑크 하트 */
 .holo__heart {
-  position: absolute; width: 13%; aspect-ratio: 32 / 29;
+  position: absolute; width: 8.5%; aspect-ratio: 32 / 29;
   transform: translate(-50%, -50%) translateZ(14px);
 }
 .holo__heart svg {
@@ -362,5 +362,7 @@ button, input, textarea { font: inherit; color: inherit; }
 .lightbox img { max-height: 90vh; border-radius: 6px; border: 1px solid var(--line); }
 
 @media (prefers-reduced-motion: reduce) {
-  .holo__spin, .holo__layer, .holo__heart svg, .holo__stage, .holo__sweep, .ring, .chip { animation: none !important; }
+  /* 회전은 핵심 연출이라 유지하되 천천히, 깜빡임·글리치 등은 끔 */
+  .holo__spin { animation-duration: 24s !important; }
+  .holo__layer, .holo__heart svg, .holo__stage, .holo__sweep, .ring, .chip { animation: none !important; }
 }
