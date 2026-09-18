@@ -1,0 +1,9 @@
+# Claude Code 로컬 설정
+.claude/
+
+# 참고용 벤치마킹 이미지 (타인 개인정보 — 공개 레포에 올리지 않음)
+벤치마킹/
+
+# OS
+Thumbs.db
+.DS_Store
