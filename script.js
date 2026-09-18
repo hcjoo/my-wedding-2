@@ -288,15 +288,15 @@ function startCountdown() {
 /* ---------- 프로젝트 히스토리 (git 그래프 모양) ---------- */
 function renderGraph() {
   const g = CONFIG.groom, b = CONFIG.bride;
-  // 위에서 아래로: 각자의 시작 → 만남 → 함께한 시간(오래된 순) → 결혼식
+  // 위에서 아래로: 각자의 시작 → 킥오프(만남) → 스프린트(함께한 시간) → 런칭(결혼식)
   const rows = [
     { lane: 0, l0: "bot", badge: `<span class="b-groom">신랑 · ${esc(g.job)}</span>`, msg: `${g.name}의 이야기` },
     { lane: 1, l0: "both", l1: "bot", badge: `<span class="b-bride">신부 · ${esc(b.job)}</span>`, msg: `${b.name}의 이야기` },
-    { lane: 0, l0: "both", merge: true, badge: `<span class="b-merge">만남</span>`, msg: "두 사람의 길이 하나로 합쳐졌어요" },
-    ...CONFIG.timeline.map((t) => ({ lane: 0, l0: "both", msg: t.msg, img: t.img })),
+    { lane: 0, l0: "both", merge: true, badge: `<span class="b-merge">Kick-off · 만남</span>`, msg: "두 사람의 길이 하나로 합쳐졌어요" },
+    ...CONFIG.timeline.map((t, i) => ({ lane: 0, l0: "both", badge: `<span class="b-sprint">Sprint ${i + 1}</span>`, msg: t.msg, img: t.img })),
     {
       lane: 0, l0: "top", release: true,
-      badge: `<span class="b-release">💍 결혼식</span>`,
+      badge: `<span class="b-release">🚀 Launch · 결혼식</span>`,
       msg: "저희 결혼합니다",
       date: `${DATE_KO} · ${CONFIG.venue.name}`,
     },

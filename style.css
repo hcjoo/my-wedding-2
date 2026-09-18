@@ -250,6 +250,7 @@ button, input, textarea { font: inherit; color: inherit; }
 .commit__badge span { display: inline-block; font: 500 11px var(--mono); padding: 1px 8px; border-radius: 999px; border: 1px solid; margin-bottom: 4px; }
 .b-release { color: var(--green-hi); }
 .b-merge { color: var(--purple); }
+.b-sprint { color: var(--blue); }
 .b-groom { color: var(--green); }
 .b-bride { color: var(--pink); }
 .commit__msg { color: #fff; font-size: 15px; line-height: 1.5; }
