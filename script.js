@@ -21,6 +21,9 @@ const CONFIG = {
     ],
   },
 
+  // 메인 한 줄 소개
+  tagline: "PM과 개발자가 만나\n‘결혼’ 프로젝트를 런칭합니다.",
+
   // 메인 홀로그램 사진 + 인물 영역 자르기(비율)
   heroImage: "images/main.jpg",
   heroCrop: { x: 0.13, y: 0.19, w: 0.87, h: 0.79 },
@@ -207,6 +210,7 @@ function buildHologram() {
 function renderHeroMeta() {
   const g = CONFIG.groom, b = CONFIG.bride;
   $("#hero-names").innerHTML = `${esc(g.name)}<span class="heart">&lt;3</span>${esc(b.name)}`;
+  $("#hero-tagline").textContent = CONFIG.tagline;
   $("#hero-when").textContent = `${W.year}.${pad(W.month)}.${pad(W.day)} ${DOW[WEDDING_AT.getDay()]} ${pad(W.hour)}:${pad(W.minute)}`;
   $("#hero-venue").textContent = `@ ${CONFIG.venue.name}`;
   $("#scroll-hint").addEventListener("click", (e) => {
