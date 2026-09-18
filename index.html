@@ -31,11 +31,18 @@
       <span class="dots"><i></i><i></i><i></i></span>
       <span class="titlebar__title">wedding-project</span>
       <span class="chip">● LIVE</span>
+      <button class="sound-btn" id="sound-btn" type="button" aria-label="소리 켜기" hidden>🔇</button>
     </header>
 
     <!-- ===== 메인: 부팅 + 홀로그램 ===== -->
     <section id="hero" class="hero">
       <pre id="boot" class="boot" aria-hidden="true"></pre>
+
+      <!-- 첫 터치: 모바일은 터치 전에 소리를 낼 수 없어서 시작 버튼으로 받음 -->
+      <div class="start" id="start">
+        <button class="start__btn" id="start-sound" type="button"><span class="c-green">▶</span> 터치해서 시작</button>
+        <button class="start__mute" id="start-mute" type="button">🔇 소리 없이 보기</button>
+      </div>
 
       <div id="holo" class="holo" aria-label="신랑 신부 홀로그램 사진">
         <div class="holo__beam"></div>
@@ -138,11 +145,15 @@
       <h2 class="sec-title">축하 메시지</h2>
       <div class="body">
         <form id="gb-form" class="gb-form" autocomplete="off">
-          <input id="gb-name" maxlength="20" placeholder="이름" required />
+          <div class="gb-row">
+            <input id="gb-name" maxlength="20" placeholder="이름" required />
+            <input id="gb-pw" type="password" maxlength="20" placeholder="비밀번호 (4자 이상)" required />
+          </div>
+          <input id="gb-website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <textarea id="gb-msg" maxlength="200" rows="3" placeholder="두 사람에게 축하 메시지를 남겨주세요" required></textarea>
           <button type="submit" class="btn btn--primary">메시지 남기기</button>
         </form>
-        <p class="comment">* 메시지는 이 기기에만 저장됩니다.</p>
+        <p class="comment" id="gb-note">* 남겨주신 메시지는 모두에게 공개돼요. 비밀번호는 내 글을 지울 때 필요해요.</p>
         <div id="gb-list" class="gb-list"></div>
       </div>
     </section>
@@ -167,6 +178,7 @@
     <img id="lightbox-img" alt="" />
   </div>
 
+  <audio id="bgm" src="audio/bgm.mp3" loop preload="none"></audio>
   <script src="script.js"></script>
 </body>
 </html>

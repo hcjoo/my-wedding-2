@@ -64,6 +64,9 @@ const CONFIG = {
     ],
   },
 
+  // 축하 메시지 저장소: 구글 Apps Script 웹 앱 URL (guestbook/Code.gs 참고). 비우면 이 기기에만 저장
+  guestbookApi: "https://script.google.com/macros/s/AKfycbxDCXyXg3XaSJA_QMftPx1PDpPoKl7QXU30iz0OoRjdclQI58oAIKc3o-IiXjWBE-geLg/exec",
+
   thanks: "바쁘신 중에도 저희의 시작을 함께해 주셔서 감사합니다.\n오래오래 서로 아끼며 예쁘게 살겠습니다.",
 };
 
@@ -118,8 +121,100 @@ document.addEventListener("DOMContentLoaded", () => {
   renderFooter();
   initLightbox();
   initReveal();
-  buildHologram().then(runBoot);
+  initSound();
+  // 홀로그램 준비 + 첫 터치(소리 허용)를 기다린 뒤 인트로 시작
+  Promise.all([buildHologram(), waitForStart()]).then(runBoot);
 });
+
+/* ---------- 사운드: BGM + 효과음(Web Audio로 직접 합성, 파일 없음) ---------- */
+let soundOn = false, actx = null;
+
+function setSound(on) {
+  soundOn = on;
+  const btn = $("#sound-btn"), bgm = $("#bgm");
+  btn.hidden = false;
+  btn.textContent = on ? "🔊" : "🔇";
+  btn.setAttribute("aria-label", on ? "소리 끄기" : "소리 켜기");
+  if (on) {
+    actx ||= new (window.AudioContext || window.webkitAudioContext)();
+    actx.resume();
+    bgm.volume = 0;
+    bgm.play().then(() => fadeTo(bgm, 0.35, 1200)).catch(() => {});
+  } else {
+    bgm.pause();
+  }
+}
+function fadeTo(el, target, ms) {
+  const from = el.volume, t0 = performance.now();
+  const step = (t) => {
+    const k = Math.min(1, (t - t0) / ms);
+    el.volume = from + (target - from) * k;
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function initSound() {
+  $("#sound-btn").addEventListener("click", () => setSound(!soundOn));
+  // 다른 앱/탭으로 가면 멈추고, 돌아오면 이어서
+  document.addEventListener("visibilitychange", () => {
+    const bgm = $("#bgm");
+    if (document.hidden) bgm.pause();
+    else if (soundOn) bgm.play().catch(() => {});
+  });
+}
+function waitForStart() {
+  return new Promise((resolve) => {
+    const start = $("#start");
+    const go = (on) => (e) => {
+      e.stopPropagation();
+      start.classList.add("gone");
+      setSound(on);
+      resolve();
+    };
+    $("#start-sound").addEventListener("click", go(true), { once: true });
+    $("#start-mute").addEventListener("click", go(false), { once: true });
+  });
+}
+
+const sfx = {
+  // 키보드 타이핑 딸깍
+  key() {
+    if (!soundOn || !actx) return;
+    const t = actx.currentTime, len = 0.025;
+    const buf = actx.createBuffer(1, actx.sampleRate * len, actx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 4);
+    const src = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
+    src.buffer = buf;
+    f.type = "bandpass"; f.frequency.value = 1800 + Math.random() * 1400; f.Q.value = 1.2;
+    g.gain.value = 0.25;
+    src.connect(f).connect(g).connect(actx.destination);
+    src.start(t);
+  },
+  // 홀로그램 켜짐: 위잉~ 상승음 + 띠링 화음
+  launch() {
+    if (!soundOn || !actx) return;
+    const t = actx.currentTime;
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = "sawtooth";
+    o.frequency.setValueAtTime(90, t);
+    o.frequency.exponentialRampToValueAtTime(900, t + 0.6);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.06, t + 0.1);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+    o.connect(g).connect(actx.destination);
+    o.start(t); o.stop(t + 0.75);
+    [659.25, 830.61, 987.77, 1318.5].forEach((hz, i) => {
+      const o2 = actx.createOscillator(), g2 = actx.createGain(), at = t + 0.55 + i * 0.09;
+      o2.type = "triangle"; o2.frequency.value = hz;
+      g2.gain.setValueAtTime(0.0001, at);
+      g2.gain.exponentialRampToValueAtTime(0.12, at + 0.02);
+      g2.gain.exponentialRampToValueAtTime(0.0001, at + 0.9);
+      o2.connect(g2).connect(actx.destination);
+      o2.start(at); o2.stop(at + 1);
+    });
+  },
+};
 
 /* ---------- 부팅 시퀀스 ---------- */
 async function runBoot() {
@@ -140,6 +235,7 @@ async function runBoot() {
       for (let i = 1; i <= l.cmd.length; i++) {
         if (skip) break;
         boot.innerHTML = pre + esc(l.cmd.slice(0, i)) + '</span><span class="cursor"></span>';
+        sfx.key();
         await sleep(12 + Math.random() * 12);
       }
       html = pre + esc(l.cmd) + "</span>\n";
@@ -149,6 +245,7 @@ async function runBoot() {
     boot.innerHTML = html + '<span class="cursor"></span>';
     if (!skip) await sleep(l.cmd ? 90 : 160);
   }
+  sfx.launch();
   $("#holo").classList.add("on");
   await sleep(skip ? 0 : 250);
   $("#hero-meta").classList.add("on");
@@ -407,38 +504,122 @@ function renderAccounts() {
   }));
 }
 
-/* ---------- 방명록 (이 기기 localStorage) ---------- */
+/* ---------- 축하 메시지 (방명록) ----------
+   CONFIG.guestbookApi 가 있으면 구글 시트(Apps Script)에 저장 → 모두가 봄
+   비어 있으면 이 기기에만 저장 (테스트용) */
 const GB_KEY = "wedding2_guestbook";
-function loadGb() {
-  try { return JSON.parse(localStorage.getItem(GB_KEY)) || []; } catch { return []; }
-}
-function saveGb(list) {
-  try { localStorage.setItem(GB_KEY, JSON.stringify(list)); } catch {}
-}
+const GB_ERR = {
+  empty: "이름과 메시지를 입력해주세요.",
+  pw_short: "비밀번호는 4자 이상 입력해주세요.",
+  duplicate: "이미 같은 메시지가 등록되었어요.",
+  busy: "잠시 후 다시 시도해주세요.",
+  wrong_pw: "비밀번호가 맞지 않아요.",
+  not_found: "이미 삭제된 메시지예요.",
+};
+const gbLocal = {
+  read() { try { return JSON.parse(localStorage.getItem(GB_KEY)) || []; } catch { return []; } },
+  write(l) { try { localStorage.setItem(GB_KEY, JSON.stringify(l)); } catch {} },
+  async list() { return this.read(); },
+  async add({ name, msg, pw }) {
+    const l = this.read();
+    l.unshift({ id: String(Date.now()), at: Date.now(), name, msg, pw });
+    this.write(l);
+    return { ok: true };
+  },
+  async remove(id, pw) {
+    const l = this.read(), i = l.findIndex((it) => it.id === id);
+    if (i < 0) return { ok: false, error: "not_found" };
+    if (l[i].pw !== pw) return { ok: false, error: "wrong_pw" };
+    l.splice(i, 1); this.write(l);
+    return { ok: true };
+  },
+};
+const gbRemote = (url) => ({
+  async list() {
+    const r = await fetch(url).then((res) => res.json());
+    return r.items || [];
+  },
+  // text/plain 으로 보내야 Apps Script 가 CORS 사전요청 없이 받음
+  post(body) {
+    return fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) })
+      .then((res) => res.json());
+  },
+  add(data) { return this.post(data); },
+  remove(id, pw) { return this.post({ action: "delete", id, pw }); },
+});
+
 function initGuestbook() {
-  const render = () => {
-    const list = loadGb();
-    $("#gb-list").innerHTML = list.map((it, i) => `
-        <div class="gb-item">
+  const api = CONFIG.guestbookApi ? gbRemote(CONFIG.guestbookApi) : gbLocal;
+  if (!CONFIG.guestbookApi) $("#gb-note").textContent = "* 테스트 모드: 메시지가 이 기기에만 저장됩니다.";
+  const listEl = $("#gb-list");
+
+  let seq = 0;
+  const render = async () => {
+    const mine = ++seq;
+    let items;
+    try { items = await api.list(); }
+    catch { if (mine === seq) listEl.innerHTML = `<p class="comment">메시지를 불러오지 못했어요. 잠시 후 새로고침해주세요.</p>`; return; }
+    if (mine !== seq) return; // 늦게 도착한 이전 요청 결과는 버림
+    listEl.innerHTML = items.length
+      ? items.map((it) => `
+        <div class="gb-item" data-id="${esc(it.id)}">
           <span class="gb-name">${esc(it.name)}</span>
           <span class="dim">${new Date(it.at).toLocaleDateString("ko-KR")}</span>
-          <button class="del" type="button" data-i="${i}">삭제</button>
+          <button class="del" type="button">삭제</button>
           <p class="msg">${esc(it.msg)}</p>
-        </div>`).join("");
-    $$("#gb-list .del").forEach((b) => b.addEventListener("click", () => {
-      const l = loadGb(); l.splice(+b.dataset.i, 1); saveGb(l); render();
-    }));
+        </div>`).join("")
+      : `<p class="comment">아직 메시지가 없어요. 첫 축하를 남겨주세요!</p>`;
   };
-  $("#gb-form").addEventListener("submit", (e) => {
+
+  // 삭제: 비밀번호 입력 칸을 글 아래에 펼침
+  listEl.addEventListener("click", async (e) => {
+    const item = e.target.closest(".gb-item");
+    if (!item) return;
+    if (e.target.matches(".del")) {
+      if (item.querySelector(".gb-del")) return item.querySelector(".gb-del").remove();
+      item.insertAdjacentHTML("beforeend", `
+        <form class="gb-del">
+          <input type="password" placeholder="작성 시 비밀번호" autocomplete="off" required />
+          <button class="btn" type="submit">삭제</button>
+        </form>`);
+      item.querySelector(".gb-del input").focus();
+    }
+  });
+  listEl.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const name = $("#gb-name").value.trim(), msg = $("#gb-msg").value.trim();
-    if (!name || !msg) return;
-    const l = loadGb();
-    l.unshift({ name, msg, at: Date.now() });
-    saveGb(l);
-    e.target.reset();
-    render();
-    toast("✓ 축하 메시지가 등록되었습니다");
+    const item = e.target.closest(".gb-item"), btn = e.target.querySelector("button");
+    btn.disabled = true;
+    try {
+      const r = await api.remove(item.dataset.id, e.target.querySelector("input").value);
+      if (!r.ok) { toast(GB_ERR[r.error] || "삭제하지 못했어요."); btn.disabled = false; return; }
+      toast("✓ 메시지가 삭제되었습니다");
+      render();
+    } catch { toast("삭제하지 못했어요. 잠시 후 다시 시도해주세요."); btn.disabled = false; }
+  });
+
+  $("#gb-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const form = e.target, btn = form.querySelector("button[type=submit]");
+    const data = {
+      name: $("#gb-name").value.trim(),
+      msg: $("#gb-msg").value.trim(),
+      pw: $("#gb-pw").value,
+      website: $("#gb-website").value, // 봇 방지용 숨은 칸
+    };
+    if (!data.name || !data.msg) return toast(GB_ERR.empty);
+    if (data.pw.length < 4) return toast(GB_ERR.pw_short);
+    btn.disabled = true; btn.textContent = "등록 중...";
+    try {
+      const r = await api.add(data);
+      if (!r.ok) { toast(GB_ERR[r.error] || "등록하지 못했어요."); return; }
+      form.reset();
+      toast("✓ 축하 메시지가 등록되었습니다");
+      render();
+    } catch {
+      toast("등록하지 못했어요. 잠시 후 다시 시도해주세요.");
+    } finally {
+      btn.disabled = false; btn.textContent = "메시지 남기기";
+    }
   });
   render();
 }
