@@ -307,7 +307,15 @@ function buildHologram() {
         spin.appendChild(el);
       });
       // 사진 비율에 맞춰 회전판 크기를 고정 → 하트 위치가 화면 크기와 무관하게 두 사람 사이에 오도록
+      // 모바일은 스크롤 시 주소창이 접히며 화면 높이가 계속 바뀜 → 크기는 처음 한 번만 정하고,
+      // 화면 너비가 바뀔 때(가로/세로 회전)만 다시 계산해 홀로그램이 늘었다 줄었다 하지 않게 함
+      const holo = $("#holo");
+      let lastW = 0;
       const fit = () => {
+        if (innerWidth === lastW) return;
+        lastW = innerWidth;
+        holo.style.height = "";
+        holo.style.height = `${holo.clientHeight}px`;
         const st = spin.parentElement, ar = sw / sh;
         let h = st.clientHeight, w = h * ar;
         if (w > st.clientWidth) { w = st.clientWidth; h = w / ar; }

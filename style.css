@@ -114,6 +114,7 @@ button, input, textarea { font: inherit; color: inherit; }
 /* ---- Hologram ---- */
 .holo {
   position: relative;
+  height: 440px;                /* svh 미지원 브라우저용 */
   height: min(54svh, 500px);
   margin: 0 auto; width: 100%;
   perspective: 900px;
