@@ -33,6 +33,7 @@ const CONFIG = {
   // 메인 홀로그램 사진 + 인물 영역 자르기(비율)
   heroImage: "images/main.jpg",
   heroCrop: { x: 0.13, y: 0.19, w: 0.87, h: 0.79 },
+  heartAt: { x: 0.48, y: 0.245 },   // 홀로그램 하트 위치 (원본 사진 기준 비율)
 
   greeting:
     "계획을 세우는 사람과\n그 계획을 만들어 내는 사람이 만나\n서로의 빈 곳을 채워주며 여기까지 왔습니다.\n\n서로의 다름을 인정하고 배려하며,\n살아가며 생기는 이슈들은\n따뜻한 소통으로 즉시 핫픽스해 나가겠습니다.\n\n저희의 성공적인 프로젝트 런칭을\n함께 축하해 주시면 감사하겠습니다.",
@@ -208,6 +209,22 @@ function buildHologram() {
         el.style.transform = `translateZ(${z}px)`;
         spin.appendChild(el);
       });
+      // 사진 비율에 맞춰 회전판 크기를 고정 → 하트 위치가 화면 크기와 무관하게 두 사람 사이에 오도록
+      const fit = () => {
+        const st = spin.parentElement, ar = sw / sh;
+        let h = st.clientHeight, w = h * ar;
+        if (w > st.clientWidth) { w = st.clientWidth; h = w / ar; }
+        Object.assign(spin.style, { width: `${w}px`, height: `${h}px`, marginLeft: `${-w / 2}px` });
+      };
+      fit();
+      addEventListener("resize", fit);
+      const hx = (CONFIG.heartAt.x - c.x) / c.w, hy = (CONFIG.heartAt.y - c.y) / c.h;
+      const heart = document.createElement("div");
+      heart.className = "holo__heart";
+      heart.style.left = `${hx * 100}%`;
+      heart.style.top = `${hy * 100}%`;
+      heart.innerHTML = `<svg viewBox="0 0 32 29"><path d="M16 28 C 6 20, 0 14, 0 8 A 8 8 0 0 1 16 5 A 8 8 0 0 1 32 8 C 32 14, 26 20, 16 28 Z"/></svg>`;
+      spin.appendChild(heart);
       resolve();
     };
     img.onerror = resolve;

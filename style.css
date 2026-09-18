@@ -105,19 +105,39 @@ button, input, textarea { font: inherit; color: inherit; }
   animation: flicker 5s infinite;
 }
 .holo__spin {
-  position: absolute; inset: 0;
+  position: absolute; bottom: 0; left: 50%; width: 100%; height: 100%;
   transform-style: preserve-3d;
   animation: spin 11s linear infinite;
 }
 .holo__layer {
   position: absolute; inset: 0;
-  background-size: contain; background-repeat: no-repeat; background-position: 50% 100%;
+  background-size: 100% 100%; background-repeat: no-repeat;
   -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
           mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
   filter: drop-shadow(0 0 6px rgba(77,255,176,.55));
   animation: glitch 7s infinite steps(1);
 }
 .holo__layer.ghost { opacity: .22; filter: none; }
+/* 두 사람 사이 핑크 하트 */
+.holo__heart {
+  position: absolute; width: 13%; aspect-ratio: 32 / 29;
+  transform: translate(-50%, -50%) translateZ(14px);
+}
+.holo__heart svg {
+  width: 100%; height: 100%; overflow: visible;
+  animation: heartbeat 1.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px #ff6fa5) drop-shadow(0 0 12px rgba(255,111,165,.8));
+}
+.holo__heart path {
+  fill: rgba(255,111,165,.35); stroke: #ffb3d0; stroke-width: 1.6; stroke-linejoin: round;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  12% { transform: scale(1.18); }
+  24% { transform: scale(.98); }
+  36% { transform: scale(1.12); }
+  50% { transform: scale(1); }
+}
 @keyframes spin { from { transform: rotateY(0); } to { transform: rotateY(360deg); } }
 @keyframes flicker {
   0%, 100% { opacity: .95; }
@@ -342,5 +362,5 @@ button, input, textarea { font: inherit; color: inherit; }
 .lightbox img { max-height: 90vh; border-radius: 6px; border: 1px solid var(--line); }
 
 @media (prefers-reduced-motion: reduce) {
-  .holo__spin, .holo__layer, .holo__stage, .holo__sweep, .ring, .chip { animation: none !important; }
+  .holo__spin, .holo__layer, .holo__heart svg, .holo__stage, .holo__sweep, .ring, .chip { animation: none !important; }
 }
