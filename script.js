@@ -259,19 +259,14 @@ function renderCalendar() {
   $("#date-text").textContent = DATE_KO;
   const first = new Date(W.year, W.month - 1, 1).getDay();
   const days = new Date(W.year, W.month, 0).getDate();
-  let out = `<span class="title">${W.year}년 ${W.month}월</span>\n<span class="wk"><span class="sun">일</span> 월 화 수 목 금 <span class="sat">토</span></span>\n`;
-  out += "   ".repeat(first);
-  let col = first;
+  const cls = (col) => (col === 0 ? "sun" : col === 6 ? "sat" : "");
+  let cells = DOW_KO.map((d, i) => `<span class="wk ${cls(i)}">${d}</span>`).join("");
+  cells += "<span></span>".repeat(first);
   for (let d = 1; d <= days; d++) {
-    let s = String(d).padStart(2, " ");
-    if (d === W.day) s = `<span class="day-d">${s}</span>`;
-    else if (col === 0) s = `<span class="sun">${s}</span>`;
-    else if (col === 6) s = `<span class="sat">${s}</span>`;
-    out += s;
-    col++;
-    if (col === 7) { out += "\n"; col = 0; } else out += " ";
+    const col = (first + d - 1) % 7;
+    cells += `<span class="${d === W.day ? "day-d" : cls(col)}">${d}</span>`;
   }
-  $("#cal").innerHTML = out.replace(/ +$/, "");
+  $("#cal").innerHTML = `<p class="title">${W.year}년 ${W.month}월</p><div class="cal__grid">${cells}</div>`;
 }
 
 function startCountdown() {

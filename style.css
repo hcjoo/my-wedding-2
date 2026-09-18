@@ -222,16 +222,18 @@ button, input, textarea { font: inherit; color: inherit; }
 /* 달력 */
 .date-text { text-align: center; color: var(--orange); font-weight: 500; margin-bottom: 14px; }
 .cal {
-  font: 14px/2 var(--mono); padding: 14px 10px;
+  padding: 16px 12px;
   background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px;
-  text-align: center; overflow-x: auto;
+  text-align: center;
 }
-.cal .title { color: #fff; font-weight: 700; font-family: var(--sans); }
-.cal .wk { color: var(--dim); }
+.cal .title { color: #fff; font-weight: 700; margin-bottom: 8px; }
+.cal__grid { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 4px; font: 14px/2.2 var(--mono); }
+.cal__grid span { justify-self: center; min-width: 2.2em; }
+.cal .wk { color: var(--dim); font-family: var(--sans); font-size: 13px; }
 .cal .sun { color: var(--red); }
 .cal .sat { color: var(--blue); }
 .cal .day-d {
-  color: var(--bg); background: var(--green); border-radius: 3px;
+  color: var(--bg); background: var(--green); border-radius: 50%;
   box-shadow: 0 0 12px rgba(63,185,80,.7); font-weight: 700;
 }
 .countdown { margin-top: 18px; text-align: center; }
