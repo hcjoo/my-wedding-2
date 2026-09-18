@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>git merge 주환철 김하정</title>
+  <meta name="description" content="2027년 1월 31일 일요일 오후 3시 30분 · 아벤티움 웨딩홀" />
+  <meta name="theme-color" content="#0d1117" />
+
+  <!-- 카카오톡/문자 공유 미리보기 -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="$ git merge 주환철 김하정" />
+  <meta property="og:description" content="2027.01.31 SUN 15:30 · 아벤티움 웨딩홀" />
+  <meta property="og:image" content="https://hcjoo.github.io/my-wedding-2/images/main.jpg" />
+  <meta property="og:url" content="https://hcjoo.github.io/my-wedding-2/" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="crt" aria-hidden="true"></div>
+
+  <main class="app">
+    <!-- 터미널 타이틀바 -->
+    <header class="titlebar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="titlebar__title">hcjoo@wedding: ~/our-wedding</span>
+      <span class="chip">⎇ main</span>
+    </header>
+
+    <!-- ===== 메인: 부팅 + 홀로그램 ===== -->
+    <section id="hero" class="hero">
+      <pre id="boot" class="boot" aria-hidden="true"></pre>
+
+      <div id="holo" class="holo" aria-label="신랑 신부 홀로그램 사진">
+        <div class="holo__beam"></div>
+        <div class="holo__stage">
+          <div class="holo__spin" id="holo-spin"></div>
+          <div class="holo__sweep"></div>
+        </div>
+        <div class="holo__base">
+          <span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span>
+        </div>
+      </div>
+
+      <div id="hero-meta" class="hero__meta">
+        <p class="prompt"><span class="ps">$</span> git merge <span class="c-blue">groom</span> <span class="c-purple">bride</span></p>
+        <h1 class="hero__names" id="hero-names"></h1>
+        <p class="dim">Merge made by the <span class="c-green">'love'</span> strategy.</p>
+        <p class="hero__when" id="hero-when"></p>
+        <p class="hero__venue" id="hero-venue"></p>
+      </div>
+
+      <button class="scroll-hint" id="scroll-hint" type="button">↓ <span>git log --more</span></button>
+    </section>
+
+    <!-- ===== 인사말 ===== -->
+    <section class="block reveal" id="readme">
+      <h2 class="cmd" data-cmd="cat README.md"></h2>
+      <div class="body">
+        <div class="md">
+          <p class="md__h"># 초대합니다</p>
+          <p class="md__body" id="greeting-body"></p>
+          <p class="md__h2">## Maintainers</p>
+          <div id="parents" class="parents"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 신랑/신부 ===== -->
+    <section class="block reveal" id="whoami">
+      <h2 class="cmd" data-cmd="cat contributors/*.json"></h2>
+      <div class="body">
+        <div class="profiles" id="profiles"></div>
+      </div>
+    </section>
+
+    <!-- ===== 날짜 ===== -->
+    <section class="block reveal" id="date">
+      <h2 class="cmd" data-cmd="cal 1 2027"></h2>
+      <div class="body">
+        <pre class="cal" id="cal"></pre>
+        <div class="countdown">
+          <p class="dim"><span class="ps">$</span> ./countdown --until release</p>
+          <p class="countdown__value" id="countdown"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 우리의 커밋 로그 ===== -->
+    <section class="block reveal" id="log">
+      <h2 class="cmd" data-cmd="git log --graph --oneline"></h2>
+      <div class="body">
+        <ol class="graph" id="graph"></ol>
+      </div>
+    </section>
+
+    <!-- ===== 인터뷰 ===== -->
+    <section class="block reveal" id="issues">
+      <h2 class="cmd" data-cmd="gh issue list --state closed"></h2>
+      <div class="body">
+        <div class="issues" id="interview"></div>
+      </div>
+    </section>
+
+    <!-- ===== 오시는 길 ===== -->
+    <section class="block reveal" id="location">
+      <h2 class="cmd" data-cmd="cat venue.yml"></h2>
+      <div class="body">
+        <pre class="yml" id="venue-yml"></pre>
+        <div class="map"><iframe id="map-frame" title="예식장 지도" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+        <div class="btn-row" id="map-buttons"></div>
+      </div>
+    </section>
+
+    <!-- ===== 마음 전하실 곳 ===== -->
+    <section class="block reveal" id="account">
+      <h2 class="cmd" data-cmd="cat .env"></h2>
+      <div class="body">
+        <p class="comment"># 참석이 어려우신 분들을 위해 적어 두었습니다. 탭하면 펼쳐집니다.</p>
+        <div id="accounts"></div>
+      </div>
+    </section>
+
+    <!-- ===== 방명록 ===== -->
+    <section class="block reveal" id="guestbook">
+      <h2 class="cmd" data-cmd="git commit -m &quot;축하 메시지&quot;"></h2>
+      <div class="body">
+        <form id="gb-form" class="gb-form" autocomplete="off">
+          <label><span class="c-blue">--author</span><input id="gb-name" maxlength="20" placeholder="이름" required /></label>
+          <label><span class="c-blue">-m</span><textarea id="gb-msg" maxlength="200" rows="3" placeholder="축하 메시지를 남겨주세요" required></textarea></label>
+          <button type="submit" class="btn btn--primary">git commit</button>
+        </form>
+        <p class="comment"># 메시지는 이 기기에만 저장됩니다.</p>
+        <div id="gb-list" class="gb-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== 푸터 ===== -->
+    <footer class="block footer reveal">
+      <h2 class="cmd" data-cmd="git push origin forever"></h2>
+      <div class="body">
+        <pre class="push" id="push-log"></pre>
+        <div class="btn-row">
+          <button class="btn btn--primary" id="share-btn" type="button">share link</button>
+        </div>
+        <p class="footer__sign" id="footer-names"></p>
+      </div>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <img id="lightbox-img" alt="" />
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
