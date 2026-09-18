@@ -221,10 +221,6 @@ function renderHeroMeta() {
   $("#hero-tagline").textContent = CONFIG.tagline;
   $("#hero-when").textContent = DATE_KO;
   $("#hero-venue").textContent = CONFIG.venue.name;
-  $("#scroll-hint").addEventListener("click", (e) => {
-    e.stopPropagation();
-    $("#invite").scrollIntoView({ behavior: "smooth" });
-  });
 }
 
 /* ---------- 초대합니다 ---------- */
