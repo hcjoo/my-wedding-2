@@ -37,13 +37,13 @@ const CONFIG = {
   greeting:
     "계획을 세우는 사람과\n그 계획을 만들어 내는 사람이 만나\n서로의 빈 곳을 채워주며 여기까지 왔습니다.\n\n서로의 다름을 인정하고 배려하며,\n살아가며 생기는 이슈들은\n따뜻한 소통으로 즉시 핫픽스해 나가겠습니다.\n\n저희의 성공적인 프로젝트 런칭을\n함께 축하해 주시면 감사하겠습니다.",
 
-  // 프로젝트 히스토리 — 위에서부터 최신순
+  // 프로젝트 히스토리 — 오래된 순 (위에서 아래로)
   timeline: [
-    { msg: "씩씩한 커플", img: ["images/t4-1.jpg", "images/t4-2.jpg"] },
-    { msg: "루이가 가족이 되었어요 🐈", img: ["images/cat.jpg"] },
-    { msg: "짤랑이와 식빵맨", img: ["images/t3.jpg"] },
-    { msg: "특별한 날, 특별한 기억", img: ["images/t2.jpg"] },
     { msg: "기념일 와인 한잔", img: ["images/t1.jpg"] },
+    { msg: "특별한 날, 특별한 기억", img: ["images/t2.jpg"] },
+    { msg: "짤랑이와 식빵맨", img: ["images/t3.jpg"] },
+    { msg: "루이가 가족이 되었어요 🐈", img: ["images/cat.jpg"] },
+    { msg: "씩씩한 커플", img: ["images/t4-1.jpg", "images/t4-2.jpg"] },
   ],
 
   interview: [
@@ -293,31 +293,34 @@ function startCountdown() {
 /* ---------- 프로젝트 히스토리 (git 그래프 모양) ---------- */
 function renderGraph() {
   const g = CONFIG.groom, b = CONFIG.bride;
+  // 위에서 아래로: 각자의 시작 → 만남 → 함께한 시간(오래된 순) → 결혼식
   const rows = [
+    { lane: 0, l0: "bot", badge: `<span class="b-groom">신랑 · ${esc(g.job)}</span>`, msg: `${g.name}의 이야기` },
+    { lane: 1, l0: "both", l1: "bot", badge: `<span class="b-bride">신부 · ${esc(b.job)}</span>`, msg: `${b.name}의 이야기` },
+    { lane: 0, l0: "both", merge: true, badge: `<span class="b-merge">만남</span>`, msg: "두 사람의 길이 하나로 합쳐졌어요" },
+    ...CONFIG.timeline.map((t) => ({ lane: 0, l0: "both", msg: t.msg, img: t.img })),
     {
-      lane: 0, l0: "bot", release: true,
+      lane: 0, l0: "top", release: true,
       badge: `<span class="b-release">💍 결혼식</span>`,
       msg: "저희 결혼합니다",
       date: `${DATE_KO} · ${CONFIG.venue.name}`,
     },
-    ...CONFIG.timeline.map((t) => ({ lane: 0, l0: "both", msg: t.msg, img: t.img })),
-    { lane: 0, l0: "both", merge: true, badge: `<span class="b-merge">만남</span>`, msg: "두 사람의 길이 하나로 합쳐졌어요" },
-    { lane: 1, l0: "both", l1: "top", badge: `<span class="b-bride">신부 · ${esc(b.job)}</span>`, msg: `${b.name}의 이야기` },
-    { lane: 0, l0: "top", badge: `<span class="b-groom">신랑 · ${esc(g.job)}</span>`, msg: `${g.name}의 이야기` },
   ];
 
-  const X0 = 9, X1 = 26, DOT_Y = 11;
+  const X0 = 9, X1 = 26, MERGE_GAP = 26;
+  const dotY = (r) => (r.merge ? 11 + MERGE_GAP : 11);
   const rail = (r) => {
     const col = (x, color, from, to) => `<line x1="${x}" x2="${x}" y1="${from}" y2="${to}" stroke="${color}" stroke-width="2"/>`;
     let s = "";
     const c0 = "var(--green)", c1 = "var(--pink)";
+    const DOT_Y = dotY(r);
     if (r.l0 === "both") s += col(X0, c0, 0, "100%");
     if (r.l0 === "bot") s += col(X0, c0, DOT_Y, "100%");
     if (r.l0 === "top") s += col(X0, c0, 0, DOT_Y);
-    if (r.l1 === "top") s += col(X1, c1, 0, DOT_Y);
+    if (r.l1 === "bot") s += col(X1, c1, DOT_Y, "100%");
     if (r.merge) {
-      s += `<path d="M${X0} ${DOT_Y} C ${X0} ${DOT_Y + 16}, ${X1} ${DOT_Y + 10}, ${X1} ${DOT_Y + 28}" fill="none" stroke="${c1}" stroke-width="2"/>`;
-      s += col(X1, c1, DOT_Y + 28, "100%");
+      // 신부 선이 신랑 선으로 합쳐지는 곡선
+      s += `<path d="M${X1} 0 C ${X1} ${DOT_Y * 0.6}, ${X0} ${DOT_Y * 0.4}, ${X0} ${DOT_Y}" fill="none" stroke="${c1}" stroke-width="2"/>`;
     }
     const cx = r.lane ? X1 : X0;
     const color = r.lane ? c1 : c0;
@@ -332,7 +335,7 @@ function renderGraph() {
     return `
       <li class="commit${r.release ? " commit--release" : ""}">
         <div class="commit__rail">${rail(r)}</div>
-        <div class="commit__body">
+        <div class="commit__body"${r.merge ? ` style="padding-top:${MERGE_GAP}px"` : ""}>
           ${r.badge ? `<div class="commit__badge">${r.badge}</div>` : ""}
           <div class="commit__msg">${esc(r.msg)}</div>
           ${r.date ? `<div class="commit__date">${esc(r.date)}</div>` : ""}
