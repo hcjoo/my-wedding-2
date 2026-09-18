@@ -2,9 +2,15 @@
    ✏️  여기만 수정하면 됩니다 — 실제 결혼식 정보로 바꿔주세요.
    ===================================================================== */
 const CONFIG = {
-  groom: { name: "주환철", en: "groom", father: "주길화", mother: "최순이", order: "장남", photo: "images/groom.jpg" },
-  bride: { name: "김하정", en: "bride", father: "김형진", mother: "허정화", order: "장녀", photo: "images/bride.jpg" },
-  pet: { name: "루이", role: "cat", photo: "images/cat.jpg" },
+  groom: {
+    name: "주환철", father: "주길화", mother: "최순이", order: "장남",
+    job: "개발자", intro: "아이디어를 코드로 현실로 만드는 사람", photo: "images/groom.jpg",
+  },
+  bride: {
+    name: "김하정", father: "김형진", mother: "허정화", order: "장녀",
+    job: "PM", intro: "사람과 일을 이어 방향을 잡아주는 사람", photo: "images/bride.jpg",
+  },
+  pet: { name: "루이", job: "고양이", intro: "팀의 분위기 담당 막내", photo: "images/cat.jpg" },
 
   // 예식 일시 (24시간제)
   wedding: { year: 2027, month: 1, day: 31, hour: 15, minute: 30 },
@@ -15,9 +21,9 @@ const CONFIG = {
     address: "주소 입력 예정",
     mapQuery: "아벤티움 웨딩홀",
     transport: [
-      { key: "subway", body: "○○역 ○번 출구 도보 ○분" },
-      { key: "bus", body: "○○ 정류장 하차 (○○, ○○번)" },
-      { key: "car", body: "내비게이션 '아벤티움' 검색, 주차 ○시간 무료" },
+      { head: "지하철", body: "○○역 ○번 출구 도보 ○분" },
+      { head: "버스", body: "○○ 정류장 하차 (○○, ○○번)" },
+      { head: "자가용", body: "내비게이션에 '아벤티움' 검색\n주차 ○시간 무료" },
     ],
   },
 
@@ -29,15 +35,15 @@ const CONFIG = {
   heroCrop: { x: 0.13, y: 0.19, w: 0.87, h: 0.79 },
 
   greeting:
-    "서로 다른 브랜치에서 각자의 커밋을 쌓아온 두 사람이\n이제 하나의 브랜치로 merge 하려 합니다.\n\n충돌 없이 오래오래 함께 빌드해 나갈 수 있도록\n귀한 걸음으로 리뷰(축복)해 주시면 감사하겠습니다.",
+    "계획을 세우는 사람과\n그 계획을 만들어 내는 사람이 만나\n서로의 빈 곳을 채워주며 여기까지 왔습니다.\n\n이제 저희 두 사람이\n평생 함께할 ‘결혼’이라는 프로젝트를 시작합니다.\n\n첫 출발을 함께해 주시면\n더없이 큰 힘이 되겠습니다.",
 
-  // git log — 위에서부터 최신순
+  // 프로젝트 히스토리 — 위에서부터 최신순
   timeline: [
-    { msg: "feat: 씩씩한 커플", img: ["images/t4-1.jpg", "images/t4-2.jpg"] },
-    { msg: "feat: 루이 합류 🐈", img: ["images/cat.jpg"] },
-    { msg: "feat: 짤랑이와 식빵맨", img: ["images/t3.jpg"] },
-    { msg: "feat: 특별한 날, 특별한 기억", img: ["images/t2.jpg"] },
-    { msg: "feat: 기념일 와인 한잔", img: ["images/t1.jpg"] },
+    { msg: "씩씩한 커플", img: ["images/t4-1.jpg", "images/t4-2.jpg"] },
+    { msg: "루이가 가족이 되었어요 🐈", img: ["images/cat.jpg"] },
+    { msg: "짤랑이와 식빵맨", img: ["images/t3.jpg"] },
+    { msg: "특별한 날, 특별한 기억", img: ["images/t2.jpg"] },
+    { msg: "기념일 와인 한잔", img: ["images/t1.jpg"] },
   ],
 
   interview: [
@@ -48,14 +54,16 @@ const CONFIG = {
 
   accounts: {
     groom: [
-      { key: "GROOM", label: "신랑", bank: "○○은행", number: "000-0000-0000", holder: "주환철" },
-      { key: "GROOM_FATHER", label: "신랑 아버지", bank: "○○은행", number: "000-0000-0000", holder: "주길화" },
+      { label: "신랑", bank: "○○은행", number: "000-0000-0000", holder: "주환철" },
+      { label: "신랑 아버지", bank: "○○은행", number: "000-0000-0000", holder: "주길화" },
     ],
     bride: [
-      { key: "BRIDE", label: "신부", bank: "○○은행", number: "000-0000-0000", holder: "김하정" },
-      { key: "BRIDE_MOTHER", label: "신부 어머니", bank: "○○은행", number: "000-0000-0000", holder: "허정화" },
+      { label: "신부", bank: "○○은행", number: "000-0000-0000", holder: "김하정" },
+      { label: "신부 어머니", bank: "○○은행", number: "000-0000-0000", holder: "허정화" },
     ],
   },
+
+  thanks: "바쁘신 중에도 저희의 시작을 함께해 주셔서 감사합니다.\n오래오래 서로 아끼며 예쁘게 살겠습니다.",
 };
 
 /* =====================================================================
@@ -65,7 +73,7 @@ const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 const W = CONFIG.wedding;
 const WEDDING_AT = new Date(W.year, W.month - 1, W.day, W.hour, W.minute);
-const DOW = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const DOW_KO = ["일", "월", "화", "수", "목", "금", "토"];
 const pad = (n) => String(n).padStart(2, "0");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -73,12 +81,13 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-// 문자열 → 7자리 커밋 해시
-function hash(str) {
-  let h = 0x811c9dc5;
-  for (const ch of str) h = Math.imul(h ^ ch.codePointAt(0), 16777619) >>> 0;
-  return (h.toString(16) + "0000000").slice(0, 7);
+function koTime(h, m) {
+  const ap = h < 12 ? "오전" : "오후";
+  const hh = h % 12 || 12;
+  return `${ap} ${hh}시${m ? ` ${m}분` : ""}`;
 }
+const DATE_KO = `${W.year}년 ${W.month}월 ${W.day}일 ${DOW_KO[WEDDING_AT.getDay()]}요일 ${koTime(W.hour, W.minute)}`;
+
 function toast(msg) {
   const t = $("#toast");
   t.textContent = msg;
@@ -115,14 +124,13 @@ document.addEventListener("DOMContentLoaded", () => {
 async function runBoot() {
   const boot = $("#boot");
   const lines = [
-    { cmd: "git clone git@github.com:love/our-wedding.git" },
-    { out: "Cloning into 'our-wedding'...\nReceiving objects: 100% (2/2), <span class=\"ok\">done.</span>" },
-    { cmd: "./hologram --render couple.jpg --spin" },
-    { out: "[<span class=\"ok\">##########</span>] 100%  projecting..." },
+    { cmd: "npm run wedding" },
+    { out: "&gt; 두 사람의 이야기를 불러오는 중... <span class=\"ok\">완료</span>" },
+    { cmd: "./hologram --start" },
+    { out: "[<span class=\"ok\">##########</span>] 100%  <span class=\"ok\">LAUNCH!</span>" },
   ];
   let skip = REDUCED;
-  const doSkip = () => (skip = true);
-  $("#hero").addEventListener("click", doSkip, { once: true });
+  $("#hero").addEventListener("click", () => (skip = true), { once: true });
 
   let html = "";
   for (const l of lines) {
@@ -131,17 +139,17 @@ async function runBoot() {
       for (let i = 1; i <= l.cmd.length; i++) {
         if (skip) break;
         boot.innerHTML = pre + esc(l.cmd.slice(0, i)) + '</span><span class="cursor"></span>';
-        await sleep(28 + Math.random() * 40);
+        await sleep(12 + Math.random() * 12);
       }
       html = pre + esc(l.cmd) + "</span>\n";
     } else {
       html += l.out + "\n";
     }
     boot.innerHTML = html + '<span class="cursor"></span>';
-    if (!skip) await sleep(l.cmd ? 250 : 380);
+    if (!skip) await sleep(l.cmd ? 90 : 160);
   }
   $("#holo").classList.add("on");
-  await sleep(skip ? 0 : 500);
+  await sleep(skip ? 0 : 250);
   $("#hero-meta").classList.add("on");
 }
 
@@ -209,61 +217,51 @@ function buildHologram() {
 
 function renderHeroMeta() {
   const g = CONFIG.groom, b = CONFIG.bride;
-  $("#hero-names").innerHTML = `${esc(g.name)}<span class="heart">&lt;3</span>${esc(b.name)}`;
+  $("#hero-names").innerHTML = `${esc(g.name)}<span class="heart">♥</span>${esc(b.name)}`;
   $("#hero-tagline").textContent = CONFIG.tagline;
-  $("#hero-when").textContent = `${W.year}.${pad(W.month)}.${pad(W.day)} ${DOW[WEDDING_AT.getDay()]} ${pad(W.hour)}:${pad(W.minute)}`;
-  $("#hero-venue").textContent = `@ ${CONFIG.venue.name}`;
+  $("#hero-when").textContent = DATE_KO;
+  $("#hero-venue").textContent = CONFIG.venue.name;
   $("#scroll-hint").addEventListener("click", (e) => {
     e.stopPropagation();
-    $("#readme").scrollIntoView({ behavior: "smooth" });
+    $("#invite").scrollIntoView({ behavior: "smooth" });
   });
 }
 
-/* ---------- README ---------- */
+/* ---------- 초대합니다 ---------- */
 function renderGreeting() {
   $("#greeting-body").textContent = CONFIG.greeting;
-  const row = (p, color) => `
+  const row = (p, role) => `
     <div class="row">
       <span class="who">${esc(p.father)} · ${esc(p.mother)}의 ${esc(p.order)}</span>
-      <span class="me">${esc(p.name)}</span>
-      <span class="tag" style="color:var(${color})">${p.en}</span>
+      <span class="me"><span class="role">${role}</span>${esc(p.name)}</span>
     </div>`;
-  $("#parents").innerHTML = row(CONFIG.groom, "--blue") + row(CONFIG.bride, "--purple");
+  $("#parents").innerHTML = row(CONFIG.groom, "신랑") + row(CONFIG.bride, "신부");
 }
 
-/* ---------- contributors/*.json ---------- */
+/* ---------- 프로젝트 팀 소개 ---------- */
 function renderProfiles() {
-  const json = (obj) => {
-    const body = Object.entries(obj).map(([k, v]) => {
-      const val = typeof v === "number" ? `<span class="n">${v}</span>` : `<span class="s">"${esc(v)}"</span>`;
-      return `  <span class="k">"${k}"</span><span class="p">:</span> ${val}`;
-    }).join('<span class="p">,</span>\n');
-    return `<span class="p">{</span>\n${body}\n<span class="p">}</span>`;
-  };
   const g = CONFIG.groom, b = CONFIG.bride, p = CONFIG.pet;
-  const card = (file, photo, obj) => `
-    <div class="card">
-      <div class="card__head">📄 ${file}</div>
-      <div class="card__inner">
-        <img class="avatar" src="${photo}" alt="" data-zoom />
-        <pre class="json">${json(obj)}</pre>
+  const card = (who, person, color) => `
+    <div class="card" style="--accent:var(${color})">
+      <img class="avatar" src="${person.photo}" alt="${esc(person.name)}" data-zoom />
+      <div class="card__info">
+        <p class="card__badge">${who} · ${esc(person.job)}</p>
+        <p class="card__name">${esc(person.name)}</p>
+        <p class="card__intro">${esc(person.intro)}</p>
       </div>
     </div>`;
   $("#profiles").innerHTML =
-    card("groom.json", g.photo, { name: g.name, role: "groom", parents: `${g.father} · ${g.mother}` }) +
-    card("bride.json", b.photo, { name: b.name, role: "bride", parents: `${b.father} · ${b.mother}` }) +
-    card("louis.json", p.photo, { name: p.name, role: p.role, lives: 9 });
+    card("신랑", g, "--blue") + card("신부", b, "--pink") + card("막내", p, "--orange");
 }
 
-/* ---------- cal ---------- */
+/* ---------- 달력 ---------- */
 function renderCalendar() {
+  $("#date-text").textContent = DATE_KO;
   const first = new Date(W.year, W.month - 1, 1).getDay();
   const days = new Date(W.year, W.month, 0).getDate();
-  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  let out = `<span class="title">${MONTHS[W.month - 1]} ${W.year}</span>\n<span class="wk"><span class="sun">Su</span> Mo Tu We Th Fr <span class="sat">Sa</span></span>\n`;
-  let col = 0;
+  let out = `<span class="title">${W.year}년 ${W.month}월</span>\n<span class="wk"><span class="sun">일</span> 월 화 수 목 금 <span class="sat">토</span></span>\n`;
   out += "   ".repeat(first);
-  col = first;
+  let col = first;
   for (let d = 1; d <= days; d++) {
     let s = String(d).padStart(2, " ");
     if (d === W.day) s = `<span class="day-d">${s}</span>`;
@@ -281,43 +279,38 @@ function startCountdown() {
   const tick = () => {
     const diff = WEDDING_AT - new Date();
     if (diff <= 0) {
-      el.innerHTML = `v1.0.0 released <small>— 결혼했습니다 🎉</small>`;
+      el.innerHTML = `런칭 완료! <small>결혼했습니다 🎉</small>`;
       return;
     }
     const s = Math.floor(diff / 1000);
     const d = Math.floor(s / 86400);
-    el.innerHTML = `D-${d} <small>${pad(Math.floor((s % 86400) / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}</small>`;
+    el.innerHTML = `D-${d} <small>${pad(Math.floor((s % 86400) / 3600))}시간 ${pad(Math.floor((s % 3600) / 60))}분 ${pad(s % 60)}초</small>`;
   };
   tick();
   setInterval(tick, 1000);
 }
 
-/* ---------- git log --graph ---------- */
+/* ---------- 프로젝트 히스토리 (git 그래프 모양) ---------- */
 function renderGraph() {
   const g = CONFIG.groom, b = CONFIG.bride;
-  const dateStr = `${W.year}-${pad(W.month)}-${pad(W.day)} ${pad(W.hour)}:${pad(W.minute)}`;
   const rows = [
     {
       lane: 0, l0: "bot", release: true,
-      refs: `<span class="head">HEAD -&gt; main</span>, <span class="tag">tag: v1.0.0</span>`,
-      msg: "release: 저희 결혼합니다 💍",
-      date: `${dateStr} · ${CONFIG.venue.name}`,
+      badge: `<span class="b-release">💍 결혼식</span>`,
+      msg: "저희 결혼합니다",
+      date: `${DATE_KO} · ${CONFIG.venue.name}`,
     },
     ...CONFIG.timeline.map((t) => ({ lane: 0, l0: "both", msg: t.msg, img: t.img })),
-    {
-      lane: 0, l0: "both", merge: true,
-      msg: `Merge branch '${b.en}' into ${g.en}`,
-      date: "우리의 시작",
-    },
-    { lane: 1, l0: "both", l1: "top", refs: `<span class="br2">${b.en}</span>`, msg: `Initial commit: ${b.name}` },
-    { lane: 0, l0: "top", refs: `<span class="br">${g.en}</span>`, msg: `Initial commit: ${g.name}` },
+    { lane: 0, l0: "both", merge: true, badge: `<span class="b-merge">만남</span>`, msg: "두 사람의 길이 하나로 합쳐졌어요" },
+    { lane: 1, l0: "both", l1: "top", badge: `<span class="b-bride">신부 · ${esc(b.job)}</span>`, msg: `${b.name}의 이야기` },
+    { lane: 0, l0: "top", badge: `<span class="b-groom">신랑 · ${esc(g.job)}</span>`, msg: `${g.name}의 이야기` },
   ];
 
   const X0 = 9, X1 = 26, DOT_Y = 11;
   const rail = (r) => {
     const col = (x, color, from, to) => `<line x1="${x}" x2="${x}" y1="${from}" y2="${to}" stroke="${color}" stroke-width="2"/>`;
     let s = "";
-    const c0 = "var(--green)", c1 = "var(--purple)";
+    const c0 = "var(--green)", c1 = "var(--pink)";
     if (r.l0 === "both") s += col(X0, c0, 0, "100%");
     if (r.l0 === "bot") s += col(X0, c0, DOT_Y, "100%");
     if (r.l0 === "top") s += col(X0, c0, 0, DOT_Y);
@@ -340,7 +333,7 @@ function renderGraph() {
       <li class="commit${r.release ? " commit--release" : ""}">
         <div class="commit__rail">${rail(r)}</div>
         <div class="commit__body">
-          <div class="commit__line"><span class="hash">${hash(r.msg)}</span>${r.refs ? ` <span class="ref">(${r.refs})</span>` : ""}</div>
+          ${r.badge ? `<div class="commit__badge">${r.badge}</div>` : ""}
           <div class="commit__msg">${esc(r.msg)}</div>
           ${r.date ? `<div class="commit__date">${esc(r.date)}</div>` : ""}
           ${imgs}
@@ -349,58 +342,57 @@ function renderGraph() {
   }).join("");
 }
 
-/* ---------- gh issue list ---------- */
+/* ---------- 자주 묻는 질문 ---------- */
 function renderInterview() {
   $("#interview").innerHTML = CONFIG.interview.map((it, i) => `
     <details class="issue"${i === 0 ? " open" : ""}>
       <summary>
-        <span class="issue__icon">✓</span>
-        <span>
-          <span class="issue__title">${esc(it.q)}</span><br/>
-          <span class="issue__meta">#${i + 1} closed by ${CONFIG.groom.en} &amp; ${CONFIG.bride.en}</span>
-        </span>
+        <span class="issue__icon">Q</span>
+        <span class="issue__title">${esc(it.q)}</span>
       </summary>
-      <div class="issue__reply"><div class="who">💬 reply</div>${esc(it.a)}</div>
+      <div class="issue__reply"><span class="issue__a">A</span>${esc(it.a)}</div>
     </details>`).join("");
 }
 
-/* ---------- venue.yml ---------- */
+/* ---------- 오시는 길 ---------- */
 function renderVenue() {
   const v = CONFIG.venue;
-  const k = (s) => `<span class="k">${s}</span>:`;
-  const s = (t) => `<span class="s">"${esc(t)}"</span>`;
-  let y = `<span class="c"># 오시는 길</span>\n`;
-  y += `${k("venue")} ${s(v.name)}\n${k("hall")} ${s(v.hall)}\n${k("address")} ${s(v.address)}\n`;
-  y += `${k("when")} ${s(`${W.year}-${pad(W.month)}-${pad(W.day)} ${pad(W.hour)}:${pad(W.minute)}`)}\n${k("transport")}\n`;
-  y += v.transport.map((t) => `  ${k(t.key)} ${s(t.body)}`).join("\n");
-  $("#venue-yml").innerHTML = y;
+  $("#venue").innerHTML = `
+    <p class="venue__name">${esc(v.name)} <span>${esc(v.hall)}</span></p>
+    <p class="venue__addr">${esc(v.address)}</p>
+    <button class="copy" type="button" id="addr-copy">주소 복사</button>`;
+  $("#addr-copy").addEventListener("click", async () => {
+    await copyText(v.address);
+    toast("✓ 주소가 복사되었습니다");
+  });
 
   const q = encodeURIComponent(v.mapQuery);
   $("#map-frame").src = `https://www.google.com/maps?q=${q}&output=embed`;
   $("#map-buttons").innerHTML = `
-    <a class="btn" href="https://map.naver.com/v5/search/${q}" target="_blank" rel="noopener">naver</a>
-    <a class="btn" href="https://map.kakao.com/?q=${q}" target="_blank" rel="noopener">kakao</a>
-    <a class="btn" href="https://www.google.com/maps/search/${q}" target="_blank" rel="noopener">google</a>`;
+    <a class="btn" href="https://map.naver.com/v5/search/${q}" target="_blank" rel="noopener">네이버 지도</a>
+    <a class="btn" href="https://map.kakao.com/?q=${q}" target="_blank" rel="noopener">카카오맵</a>
+    <a class="btn" href="https://www.google.com/maps/search/${q}" target="_blank" rel="noopener">구글 지도</a>`;
+  $("#transport").innerHTML = v.transport.map((t) => `<dt>${esc(t.head)}</dt><dd>${esc(t.body)}</dd>`).join("");
 }
 
-/* ---------- .env ---------- */
+/* ---------- 마음 전하실 곳 ---------- */
 function renderAccounts() {
   const group = (title, list) => `
     <details class="env">
-      <summary><span><span class="c-dim"># </span>${title}</span></summary>
+      <summary>${title}</summary>
       ${list.map((a) => `
         <div class="env__row">
           <div class="kv">
-            <span class="k">${a.key}</span>=<span class="v">${esc(a.bank)} ${esc(a.number)}</span><br/>
-            <span class="h">${esc(a.label)} · ${esc(a.holder)}</span>
+            <span class="h">${esc(a.label)} · ${esc(a.holder)}</span><br/>
+            <span class="v">${esc(a.bank)} ${esc(a.number)}</span>
           </div>
-          <button class="copy" type="button" data-copy="${esc(`${a.bank} ${a.number}`)}">copy</button>
+          <button class="copy" type="button" data-copy="${esc(`${a.bank} ${a.number}`)}">복사</button>
         </div>`).join("")}
     </details>`;
-  $("#accounts").innerHTML = group("신랑측", CONFIG.accounts.groom) + group("신부측", CONFIG.accounts.bride);
+  $("#accounts").innerHTML = group("신랑측 계좌번호", CONFIG.accounts.groom) + group("신부측 계좌번호", CONFIG.accounts.bride);
   $$("#accounts .copy").forEach((btn) => btn.addEventListener("click", async () => {
     await copyText(btn.dataset.copy);
-    toast("✓ copied to clipboard");
+    toast("✓ 계좌번호가 복사되었습니다");
   }));
 }
 
@@ -415,15 +407,13 @@ function saveGb(list) {
 function initGuestbook() {
   const render = () => {
     const list = loadGb();
-    $("#gb-list").innerHTML = list.length
-      ? list.map((it, i) => `
+    $("#gb-list").innerHTML = list.map((it, i) => `
         <div class="gb-item">
-          <span class="hash">commit ${hash(it.name + it.msg + it.at)}</span>
-          <button class="del" type="button" data-i="${i}">revert</button><br/>
-          <span class="dim">Author: ${esc(it.name)} · ${new Date(it.at).toLocaleString("ko-KR")}</span>
+          <span class="gb-name">${esc(it.name)}</span>
+          <span class="dim">${new Date(it.at).toLocaleDateString("ko-KR")}</span>
+          <button class="del" type="button" data-i="${i}">삭제</button>
           <p class="msg">${esc(it.msg)}</p>
-        </div>`).join("")
-      : `<p class="comment">nothing to show — 첫 커밋을 남겨주세요.</p>`;
+        </div>`).join("");
     $$("#gb-list .del").forEach((b) => b.addEventListener("click", () => {
       const l = loadGb(); l.splice(+b.dataset.i, 1); saveGb(l); render();
     }));
@@ -437,18 +427,15 @@ function initGuestbook() {
     saveGb(l);
     e.target.reset();
     render();
-    toast("✓ 1 file changed, 1 insertion(+)");
+    toast("✓ 축하 메시지가 등록되었습니다");
   });
   render();
 }
 
-/* ---------- footer ---------- */
+/* ---------- 마무리 ---------- */
 function renderFooter() {
-  $("#push-log").innerHTML =
-    `Enumerating objects: 2, done.\nWriting objects: 100% (2/2), <span class="ok">done.</span>\n` +
-    `To github.com:love/our-wedding.git\n   <span class="c-orange">groom + bride</span> -&gt; <span class="ok">forever</span>\n\n` +
-    `<span class="c-green">Thank you for being part of our history.</span>`;
-  $("#footer-names").innerHTML = `<b>${esc(CONFIG.groom.name)}</b> &amp; <b>${esc(CONFIG.bride.name)}</b>`;
+  $("#thanks").textContent = CONFIG.thanks;
+  $("#footer-names").innerHTML = `<b>${esc(CONFIG.groom.name)}</b> ♥ <b>${esc(CONFIG.bride.name)}</b>`;
   $("#share-btn").addEventListener("click", async () => {
     const data = { title: document.title, url: location.href };
     if (navigator.share) { try { await navigator.share(data); } catch {} return; }
@@ -469,9 +456,9 @@ function initLightbox() {
   lb.addEventListener("click", () => (lb.hidden = true));
 }
 
-/* ---------- 스크롤 시 명령어 타이핑 ---------- */
+/* ---------- 스크롤 시 명령어 타이핑 (장식) ---------- */
 function initReveal() {
-  const prompt = `<span class="ps">~/our-wedding</span><span class="branch">(main)</span> <span class="c-green">$</span> `;
+  const prompt = `<span class="c-green">$</span> `;
   $$(".cmd").forEach((h) => (h.innerHTML = prompt));
   const typeCmd = async (block) => {
     const h = block.querySelector(".cmd");
@@ -481,7 +468,7 @@ function initReveal() {
         h.innerHTML = prompt + esc(cmd.slice(0, i)) + '<span class="cursor"></span>';
         await sleep(22);
       }
-      await sleep(120);
+      await sleep(100);
     }
     h.innerHTML = prompt + esc(cmd);
     block.classList.add("typed");
