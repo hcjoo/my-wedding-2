@@ -293,6 +293,7 @@ button, input, textarea { font: inherit; color: inherit; }
 .b-bride { color: var(--pink); }
 .commit__msg { color: #fff; font-size: 15px; line-height: 1.5; }
 .commit__date { color: var(--orange); font-size: 12px; margin-top: 2px; }
+.commit__sub { color: var(--dim); font-size: 12px; margin-top: 3px; font-family: var(--mono); opacity: .8; }
 /* 사진 토글 (열고 닫기) */
 .commit__photos-wrap { margin-top: 10px; }
 .commit__photos-wrap > summary {
@@ -315,18 +316,14 @@ button, input, textarea { font: inherit; color: inherit; }
 
 /* 결혼 사진 */
 .gallery__wrap { margin-left: 36px; margin-top: -14px; }   /* 런칭 글과 간격을 스프린트와 같게 */
+/* 결혼 사진 토글은 버튼이 아니라 글씨처럼 */
+.gallery__wrap > summary { padding: 0; border: 0; background: none; font-size: 13px; }
+.gallery__wrap > summary:hover { border-color: transparent; }
 .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 10px; }
 .gallery img {
   width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px;
   border: 1px solid var(--line); cursor: zoom-in; background: rgba(255,255,255,.03);
 }
-.gallery__more {
-  display: block; width: 100%; margin-top: 10px; padding: 10px;
-  background: rgba(255,255,255,.02); border: 1px solid var(--line); border-radius: 6px;
-  color: var(--muted, #8b949e); font: inherit; font-size: 13px; cursor: pointer;
-}
-.gallery__more:hover { color: var(--green-hi); border-color: var(--green); }
-.gallery__more[hidden] { display: none; }
 
 /* Q&A */
 .issues { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
@@ -378,7 +375,9 @@ button, input, textarea { font: inherit; color: inherit; }
 .env__row .v { color: #a5d6ff; font-family: var(--mono); font-size: 13px; }
 .env__row .h { color: var(--dim); font-size: 13px; }
 /* 신랑측은 초록, 신부측은 분홍 */
-.env--groom summary { color: var(--green); }
+.env--groom summary { color: var(--blue); }
+.env--groom { border-color: color-mix(in srgb, var(--blue) 45%, var(--line)); }
+.env--groom .env__row .v { color: var(--blue); }
 .env--bride summary { color: var(--pink); }
 .env--bride { border-color: color-mix(in srgb, var(--pink) 45%, var(--line)); }
 .env--bride .env__row .v { color: var(--pink); }

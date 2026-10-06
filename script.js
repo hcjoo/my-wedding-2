@@ -5,10 +5,12 @@ const CONFIG = {
   groom: {
     name: "주환철", father: "주길화", mother: "최순이", order: "장남",
     job: "개발자", intro: "아내의 말을 듣고 실행하는 사람", photo: "images/groom.jpg",
+    birth: "1989. 01. 21",
   },
   bride: {
     name: "김하정", father: "김형진", mother: "허정화", order: "장녀",
     job: "프로젝트 매니저", intro: "남편의 길을 응원하고 잡아주는 사람", photo: "images/bride.jpg",
+    birth: "1990. 06. 19",
   },
   pet: { name: "루이", job: "고양이", intro: "팀의 분위기 담당 막내", photo: "images/cat-face.jpg" },
 
@@ -47,19 +49,20 @@ const CONFIG = {
   heartAt: { x: 0.50, y: 0.305 },   // 홀로그램 하트 위치 (원본 사진 기준 비율)
 
   greeting:
-    "계획을 세우는 사람과\n그 계획을 만들어 내는 사람이 만나\n서로의 빈 곳을 채워주며 여기까지 왔습니다.\n\n서로의 다름을 인정하고 배려하며,\n살아가며 생기는 이슈들은\n따뜻한 소통으로 즉시 핫픽스해 나가겠습니다.\n\n저희의 성공적인 프로젝트 런칭을\n함께 축하해 주시면 감사하겠습니다.",
+    "계획을 세우는 사람과\n그 계획을 현실로 만들어내는 사람이 만나\n서로의 부족한 점을 채워주며 '우리'라는 세상을 만들어 나가려고 합니다.\n\n서로의 다름을 인정하고 배려하며,\n살아가며 생기는 이슈들은\n따뜻한 소통으로 즉시 핫픽스해 나가겠습니다.\n\n저희의 성공적인 프로젝트 런칭을\n함께 축하해 주시면 감사하겠습니다.",
 
   // 결혼 사진 (images/gallery 폴더)
   gallery: Array.from({ length: 22 }, (_, i) => `images/gallery/g${String(i + 1).padStart(2, "0")}.jpg`),
-  galleryFirst: 9,   // 처음에 보여줄 장수 (나머지는 '더 보기')
 
   // 프로젝트 히스토리 — 오래된 순 (위에서 아래로)
   timeline: [
-    { msg: "기념일 와인 한잔", img: ["images/t1.jpg"] },
-    { msg: "특별한 날, 특별한 기억", img: ["images/t2.jpg"] },
+    { msg: "첫 기념일, 와인 한잔 하고", img: ["images/기념일.jpg"] },
+    { msg: "궁금한 루이 기웃기웃", img: ["images/루이등장.jpg"] },
+    { msg: "특별한 날, 특별한 기억", img: ["images/특별.jpg"] },
     { msg: "짤랑이와 식빵맨", img: ["images/t3.jpg"] },
-    { msg: "귀여운 루이 사진 등장", img: ["images/cat.jpg"] },
+    { msg: "귀여운 루이 한번 더 등장!", img: ["images/루이상자.jpg"] },
     { msg: "씩씩한 커플로 진화!", img: ["images/t4-1.jpg", "images/t4-2.jpg"] },
+    { msg: "웨딩링 자랑! 반짝 반짝! 신부가 참 좋아해요", img: ["images/반지.jpg"] },
   ],
 
   accounts: {
@@ -155,7 +158,7 @@ function fadeTo(el, target, ms) {
   const from = el.volume, t0 = performance.now();
   const step = (t) => {
     const k = Math.min(1, (t - t0) / ms);
-    el.volume = from + (target - from) * k;
+    el.volume = Math.min(1, Math.max(0, from + (target - from) * k));
     if (k < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -415,9 +418,9 @@ function renderGraph() {
   const g = CONFIG.groom, b = CONFIG.bride;
   // 위에서 아래로: 각자의 시작 → 킥오프(만남) → 스프린트(함께한 시간) → 런칭(결혼식)
   const rows = [
-    { lane: 0, l0: "bot", badge: `<span class="b-groom">신랑 · ${esc(g.job)}</span>`, msg: `${g.name}의 이야기` },
-    { lane: 1, l0: "both", l1: "bot", badge: `<span class="b-bride">신부 · ${esc(b.job)}</span>`, msg: `${b.name}의 이야기` },
-    { lane: 0, l0: "both", merge: true, badge: `<span class="b-merge">Kick-off · 만남</span>`, msg: "두 사람의 길이 하나로 합쳐졌어요" },
+    { lane: 0, l0: "bot", badge: `<span class="b-groom">신랑 · ${esc(g.job)}</span>`, msg: `${g.name}의 이야기`, sub: g.birth },
+    { lane: 1, l0: "both", l1: "bot", badge: `<span class="b-bride">신부 · ${esc(b.job)}</span>`, msg: `${b.name}의 이야기`, sub: b.birth },
+    { lane: 0, l0: "both", merge: true, badge: `<span class="b-merge">Kick-off · 만남</span>`, msg: "두 사람의 길이 하나로 합쳐졌어요", img: ["images/킥오프.jpg"] },
     ...CONFIG.timeline.map((t, i) => ({ lane: 0, l0: "both", badge: `<span class="b-sprint">Sprint ${i + 1}</span>`, msg: t.msg, img: t.img })),
     {
       lane: 0, l0: "top", release: true,
@@ -462,6 +465,7 @@ function renderGraph() {
         <div class="commit__body"${r.merge ? ` style="padding-top:${MERGE_GAP}px"` : ""}>
           ${r.badge ? `<div class="commit__badge">${r.badge}</div>` : ""}
           <div class="commit__msg">${esc(r.msg)}</div>
+          ${r.sub ? `<div class="commit__sub">${esc(r.sub)}</div>` : ""}
           ${r.date ? `<div class="commit__date">${esc(r.date)}</div>` : ""}
           ${imgs}
         </div>
@@ -652,19 +656,10 @@ function renderFooter() {
 /* ---------- 결혼 사진 ---------- */
 function renderGallery() {
   const all = CONFIG.gallery;
-  const box = $("#gallery-grid"), more = $("#gallery-more");
+  const box = $("#gallery-grid");
   $("#gallery-summary").textContent = `결혼 사진 ${all.length}장`;
-  let shown = Math.min(CONFIG.galleryFirst, all.length);
-
-  const draw = () => {
-    box.innerHTML = all.slice(0, shown)
-      .map((src, i) => `<img src="${src}" alt="웨딩 사진 ${i + 1}" loading="lazy" data-zoom />`).join("");
-    const rest = all.length - shown;
-    more.hidden = rest <= 0;
-    more.textContent = `사진 ${rest}장 더 보기`;
-  };
-  more.addEventListener("click", () => { shown = all.length; draw(); });
-  draw();
+  box.innerHTML = all
+    .map((src, i) => `<img src="${src}" alt="웨딩 사진 ${i + 1}" loading="lazy" data-zoom />`).join("");
 }
 
 /* ---------- 사진 확대 ---------- */
