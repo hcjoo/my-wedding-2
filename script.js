@@ -17,13 +17,24 @@ const CONFIG = {
 
   venue: {
     name: "아벤티움 웨딩홀",
-    hall: "○층 ○○홀",
-    address: "주소 입력 예정",
-    mapQuery: "아벤티움 웨딩홀",
+    hall: "브라운스톤서울 3층",
+    address: "서울 중구 청파로 464 브라운스톤서울 3층",
+    mapQuery: "서울 중구 청파로 464 브라운스톤서울",
     transport: [
-      { head: "지하철", body: "○○역 ○번 출구 도보 ○분" },
-      { head: "버스", body: "○○ 정류장 하차 (○○, ○○번)" },
-      { head: "자가용", body: "내비게이션에 '아벤티움' 검색\n주차 ○시간 무료" },
+      { head: "지하철", items: [
+        { line: "2·5호선 충정로역 4번 출구", note: "도보 3분 · 출구 방향으로 70m 직진 후 횡단보도 건너편" },
+        { line: "1·4호선 서울역 15번 출구 (공항철도)", note: "도보 10분 · 서부광장 방향으로 나와 한국경제신문사 맞은편" },
+      ] },
+      { head: "버스", items: [
+        { line: "한국경제신문사", note: "마을 서대문06 · 간선 370, 603 · 지선 7011, 7013A, 7013B, 7017 · 공항 6015" },
+        { line: "경찰청 · 동북아역사재단", note: "간선 103, 150, 701, 704, 708, 709, 742, 750A, 750B, 752 · 지선 7021, 7024, M7154 · 공항 6005" },
+        { line: "서울역 서부", note: "간선 173, 261, 262, 463, 503, 604 · 지선 7021, 7024" },
+        { line: "종근당 · 충정로역", note: "간선 172, 472, 603, N51, N62, N73" },
+      ] },
+      { head: "주차", items: [
+        { line: "본관 — 브라운스톤서울", note: "중구 청파로 464" },
+        { line: "별관 — 서소문공원", note: "중구 칠패로 5" },
+      ] },
     ],
   },
 
@@ -38,29 +49,25 @@ const CONFIG = {
   greeting:
     "계획을 세우는 사람과\n그 계획을 만들어 내는 사람이 만나\n서로의 빈 곳을 채워주며 여기까지 왔습니다.\n\n서로의 다름을 인정하고 배려하며,\n살아가며 생기는 이슈들은\n따뜻한 소통으로 즉시 핫픽스해 나가겠습니다.\n\n저희의 성공적인 프로젝트 런칭을\n함께 축하해 주시면 감사하겠습니다.",
 
+  // 결혼 사진 (images/gallery 폴더)
+  gallery: Array.from({ length: 22 }, (_, i) => `images/gallery/g${String(i + 1).padStart(2, "0")}.jpg`),
+  galleryFirst: 9,   // 처음에 보여줄 장수 (나머지는 '더 보기')
+
   // 프로젝트 히스토리 — 오래된 순 (위에서 아래로)
   timeline: [
     { msg: "기념일 와인 한잔", img: ["images/t1.jpg"] },
     { msg: "특별한 날, 특별한 기억", img: ["images/t2.jpg"] },
     { msg: "짤랑이와 식빵맨", img: ["images/t3.jpg"] },
-    { msg: "루이가 가족이 되었어요 🐈", img: ["images/cat.jpg"] },
-    { msg: "씩씩한 커플", img: ["images/t4-1.jpg", "images/t4-2.jpg"] },
-  ],
-
-  interview: [
-    { q: "신혼여행은 어디로 가나요?", a: "고민 끝에 ○○로 결정했어요. 너무 설레요!" },
-    { q: "첫 데이트는 누가 신청했나요?", a: "사실 처음 보자마자 반했어요. 먼저 마음을 표현해줘서 고마웠어요." },
-    { q: "서로의 첫인상은 어땠나요?", a: "친구처럼 편안했고, 함께라면 뭐든 즐거울 것 같았어요." },
+    { msg: "귀여운 루이 사진 등장", img: ["images/cat.jpg"] },
+    { msg: "씩씩한 커플로 진화!", img: ["images/t4-1.jpg", "images/t4-2.jpg"] },
   ],
 
   accounts: {
     groom: [
-      { label: "신랑", bank: "○○은행", number: "000-0000-0000", holder: "주환철" },
-      { label: "신랑 아버지", bank: "○○은행", number: "000-0000-0000", holder: "주길화" },
+      { label: "신랑", bank: "신한은행", number: "110-472-002396", holder: "주환철" },
     ],
     bride: [
-      { label: "신부", bank: "○○은행", number: "000-0000-0000", holder: "김하정" },
-      { label: "신부 어머니", bank: "○○은행", number: "000-0000-0000", holder: "허정화" },
+      { label: "신부", bank: "카카오뱅크", number: "3333-04-2972062", holder: "김하정" },
     ],
   },
 
@@ -114,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCalendar();
   startCountdown();
   renderGraph();
-  renderInterview();
+  renderGallery();
   renderVenue();
   renderAccounts();
   initGuestbook();
@@ -444,7 +451,11 @@ function renderGraph() {
   };
 
   $("#graph").innerHTML = rows.map((r) => {
-    const imgs = r.img ? `<div class="commit__photos">${r.img.map((src) => `<img src="${src}" alt="" loading="lazy" data-zoom />`).join("")}</div>` : "";
+    const imgs = r.img ? `
+          <details class="commit__photos-wrap">
+            <summary>사진 ${r.img.length}장</summary>
+            <div class="commit__photos">${r.img.map((src) => `<img src="${src}" alt="" loading="lazy" data-zoom />`).join("")}</div>
+          </details>` : "";
     return `
       <li class="commit${r.release ? " commit--release" : ""}">
         <div class="commit__rail">${rail(r)}</div>
@@ -456,18 +467,6 @@ function renderGraph() {
         </div>
       </li>`;
   }).join("");
-}
-
-/* ---------- 자주 묻는 질문 ---------- */
-function renderInterview() {
-  $("#interview").innerHTML = CONFIG.interview.map((it, i) => `
-    <details class="issue"${i === 0 ? " open" : ""}>
-      <summary>
-        <span class="issue__icon">Q</span>
-        <span class="issue__title">${esc(it.q)}</span>
-      </summary>
-      <div class="issue__reply"><span class="issue__a">A</span>${esc(it.a)}</div>
-    </details>`).join("");
 }
 
 /* ---------- 오시는 길 ---------- */
@@ -488,13 +487,19 @@ function renderVenue() {
     <a class="btn" href="https://map.naver.com/v5/search/${q}" target="_blank" rel="noopener">네이버 지도</a>
     <a class="btn" href="https://map.kakao.com/?q=${q}" target="_blank" rel="noopener">카카오맵</a>
     <a class="btn" href="https://www.google.com/maps/search/${q}" target="_blank" rel="noopener">구글 지도</a>`;
-  $("#transport").innerHTML = v.transport.map((t) => `<dt>${esc(t.head)}</dt><dd>${esc(t.body)}</dd>`).join("");
+  $("#transport").innerHTML = v.transport.map((t) => `
+    <dt>${esc(t.head)}</dt>
+    <dd>${t.items.map((i) => `
+      <div class="way">
+        <span class="way__line">${esc(i.line)}</span>
+        <span class="way__note">${esc(i.note)}</span>
+      </div>`).join("")}</dd>`).join("");
 }
 
 /* ---------- 마음 전하실 곳 ---------- */
 function renderAccounts() {
-  const group = (title, list) => `
-    <details class="env">
+  const group = (title, list, side) => `
+    <details class="env env--${side}">
       <summary>${title}</summary>
       ${list.map((a) => `
         <div class="env__row">
@@ -505,7 +510,7 @@ function renderAccounts() {
           <button class="copy" type="button" data-copy="${esc(`${a.bank} ${a.number}`)}">복사</button>
         </div>`).join("")}
     </details>`;
-  $("#accounts").innerHTML = group("신랑측 계좌번호", CONFIG.accounts.groom) + group("신부측 계좌번호", CONFIG.accounts.bride);
+  $("#accounts").innerHTML = group("신랑측 계좌번호", CONFIG.accounts.groom, "groom") + group("신부측 계좌번호", CONFIG.accounts.bride, "bride");
   $$("#accounts .copy").forEach((btn) => btn.addEventListener("click", async () => {
     await copyText(btn.dataset.copy);
     toast("✓ 계좌번호가 복사되었습니다");
@@ -642,6 +647,24 @@ function renderFooter() {
     await copyText(location.href);
     toast("✓ 링크가 복사되었습니다");
   });
+}
+
+/* ---------- 결혼 사진 ---------- */
+function renderGallery() {
+  const all = CONFIG.gallery;
+  const box = $("#gallery-grid"), more = $("#gallery-more");
+  $("#gallery-summary").textContent = `결혼 사진 ${all.length}장`;
+  let shown = Math.min(CONFIG.galleryFirst, all.length);
+
+  const draw = () => {
+    box.innerHTML = all.slice(0, shown)
+      .map((src, i) => `<img src="${src}" alt="웨딩 사진 ${i + 1}" loading="lazy" data-zoom />`).join("");
+    const rest = all.length - shown;
+    more.hidden = rest <= 0;
+    more.textContent = `사진 ${rest}장 더 보기`;
+  };
+  more.addEventListener("click", () => { shown = all.length; draw(); });
+  draw();
 }
 
 /* ---------- 사진 확대 ---------- */

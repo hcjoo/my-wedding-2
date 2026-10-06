@@ -293,6 +293,18 @@ button, input, textarea { font: inherit; color: inherit; }
 .b-bride { color: var(--pink); }
 .commit__msg { color: #fff; font-size: 15px; line-height: 1.5; }
 .commit__date { color: var(--orange); font-size: 12px; margin-top: 2px; }
+/* 사진 토글 (열고 닫기) */
+.commit__photos-wrap { margin-top: 10px; }
+.commit__photos-wrap > summary {
+  display: inline-flex; align-items: center; gap: 6px;
+  list-style: none; cursor: pointer; user-select: none;
+  padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px;
+  font-size: 12px; color: var(--muted, #8b949e); background: rgba(255,255,255,.02);
+}
+.commit__photos-wrap > summary::-webkit-details-marker { display: none; }
+.commit__photos-wrap > summary::before { content: "▸"; font-size: 10px; transition: transform .15s; }
+.commit__photos-wrap[open] > summary::before { transform: rotate(90deg); }
+.commit__photos-wrap > summary:hover { color: var(--green-hi); border-color: var(--green); }
 .commit__photos { display: flex; gap: 6px; margin-top: 10px; }
 .commit__photos img {
   flex: 1; min-width: 0; aspect-ratio: 1; object-fit: cover; border-radius: 6px;
@@ -300,6 +312,21 @@ button, input, textarea { font: inherit; color: inherit; }
 }
 .commit__photos img:only-child { flex: 0 1 72%; }
 .commit--release .commit__msg { color: var(--green-hi); font-weight: 700; font-size: 17px; }
+
+/* 결혼 사진 */
+.gallery__wrap { margin-left: 36px; margin-top: -14px; }   /* 런칭 글과 간격을 스프린트와 같게 */
+.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 10px; }
+.gallery img {
+  width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px;
+  border: 1px solid var(--line); cursor: zoom-in; background: rgba(255,255,255,.03);
+}
+.gallery__more {
+  display: block; width: 100%; margin-top: 10px; padding: 10px;
+  background: rgba(255,255,255,.02); border: 1px solid var(--line); border-radius: 6px;
+  color: var(--muted, #8b949e); font: inherit; font-size: 13px; cursor: pointer;
+}
+.gallery__more:hover { color: var(--green-hi); border-color: var(--green); }
+.gallery__more[hidden] { display: none; }
 
 /* Q&A */
 .issues { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
@@ -325,9 +352,11 @@ button, input, textarea { font: inherit; color: inherit; }
 .venue__addr { color: var(--fg); font-size: 14px; margin: 2px 0 8px; }
 .map { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; height: 220px; }
 .map iframe { width: 100%; height: 100%; border: 0; filter: invert(.9) hue-rotate(180deg) saturate(.7); }
-.transport { margin-top: 20px; display: grid; grid-template-columns: 64px 1fr; gap: 10px 12px; font-size: 14px; }
+.transport { margin-top: 20px; display: grid; grid-template-columns: 52px 1fr; gap: 18px 12px; font-size: 14px; }
 .transport dt { color: var(--green); font-weight: 700; }
-.transport dd { white-space: pre-line; }
+.transport dd { display: flex; flex-direction: column; gap: 10px; }
+.way__line { display: block; color: var(--fg); font-weight: 600; }
+.way__note { display: block; margin-top: 2px; color: var(--dim); font-size: 13px; line-height: 1.7; }
 
 .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .btn {
@@ -348,6 +377,11 @@ button, input, textarea { font: inherit; color: inherit; }
 .env__row .kv { flex: 1; min-width: 0; word-break: break-all; }
 .env__row .v { color: #a5d6ff; font-family: var(--mono); font-size: 13px; }
 .env__row .h { color: var(--dim); font-size: 13px; }
+/* 신랑측은 초록, 신부측은 분홍 */
+.env--groom summary { color: var(--green); }
+.env--bride summary { color: var(--pink); }
+.env--bride { border-color: color-mix(in srgb, var(--pink) 45%, var(--line)); }
+.env--bride .env__row .v { color: var(--pink); }
 .copy { flex: none; padding: 5px 12px; font-size: 12px; border-radius: 6px; background: var(--bg-3); border: 1px solid var(--line); cursor: pointer; }
 
 /* 방명록 */
