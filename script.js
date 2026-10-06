@@ -4,13 +4,13 @@
 const CONFIG = {
   groom: {
     name: "주환철", father: "주길화", mother: "최순이", order: "장남",
-    job: "개발자", intro: "아이디어를 코드로 현실로 만드는 사람", photo: "images/groom.jpg",
+    job: "개발자", intro: "아내의 말을 듣고 실행하는 사람", photo: "images/groom.jpg",
   },
   bride: {
     name: "김하정", father: "김형진", mother: "허정화", order: "장녀",
-    job: "PM", intro: "사람과 일을 이어 방향을 잡아주는 사람", photo: "images/bride.jpg",
+    job: "프로젝트 매니저", intro: "남편의 길을 응원하고 잡아주는 사람", photo: "images/bride.jpg",
   },
-  pet: { name: "루이", job: "고양이", intro: "팀의 분위기 담당 막내", photo: "images/cat.jpg" },
+  pet: { name: "루이", job: "고양이", intro: "팀의 분위기 담당 막내", photo: "images/cat-face.jpg" },
 
   // 예식 일시 (24시간제)
   wedding: { year: 2027, month: 1, day: 31, hour: 15, minute: 30 },
@@ -39,12 +39,12 @@ const CONFIG = {
   },
 
   // 메인 한 줄 소개
-  tagline: "PM과 개발자가 만나\n‘결혼’ 프로젝트를 런칭합니다.",
+  tagline: "프로젝트 매니저와 개발자가 만나\n‘결혼’ 프로젝트를 런칭합니다.",
 
   // 메인 홀로그램 사진 + 인물 영역 자르기(비율)
-  heroImage: "images/main.jpg",
-  heroCrop: { x: 0.13, y: 0.19, w: 0.87, h: 0.79 },
-  heartAt: { x: 0.48, y: 0.245 },   // 홀로그램 하트 위치 (원본 사진 기준 비율)
+  heroImage: "images/gallery/g20.jpg",
+  heroCrop: { x: 0.17, y: 0.23, w: 0.74, h: 0.68 },
+  heartAt: { x: 0.50, y: 0.305 },   // 홀로그램 하트 위치 (원본 사진 기준 비율)
 
   greeting:
     "계획을 세우는 사람과\n그 계획을 만들어 내는 사람이 만나\n서로의 빈 곳을 채워주며 여기까지 왔습니다.\n\n서로의 다름을 인정하고 배려하며,\n살아가며 생기는 이슈들은\n따뜻한 소통으로 즉시 핫픽스해 나가겠습니다.\n\n저희의 성공적인 프로젝트 런칭을\n함께 축하해 주시면 감사하겠습니다.",
