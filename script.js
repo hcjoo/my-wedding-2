@@ -130,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initGuestbook();
   renderFooter();
   initLightbox();
+  initImageRetry();
   initReveal();
   initSound();
   // 홀로그램 준비 + 첫 터치(소리 허용)를 기다린 뒤 인트로 시작
@@ -358,12 +359,12 @@ function renderHeroMeta() {
 /* ---------- 초대합니다 ---------- */
 function renderGreeting() {
   $("#greeting-body").textContent = CONFIG.greeting;
-  const row = (p, role) => `
+  const row = (p, role, color) => `
     <div class="row">
       <span class="who">${esc(p.father)} · ${esc(p.mother)}의 ${esc(p.order)}</span>
-      <span class="me"><span class="role">${role}</span>${esc(p.name)}</span>
+      <span class="me"><span class="role" style="color:var(${color})">${role}</span>${esc(p.name)}</span>
     </div>`;
-  $("#parents").innerHTML = row(CONFIG.groom, "신랑") + row(CONFIG.bride, "신부");
+  $("#parents").innerHTML = row(CONFIG.groom, "신랑", "--blue") + row(CONFIG.bride, "신부", "--pink");
 }
 
 /* ---------- 프로젝트 팀 소개 ---------- */
@@ -660,6 +661,20 @@ function renderGallery() {
   $("#gallery-summary").textContent = `결혼 사진 ${all.length}장`;
   box.innerHTML = all
     .map((src, i) => `<img src="${src}" alt="웨딩 사진 ${i + 1}" loading="lazy" data-zoom />`).join("");
+}
+
+/* ---------- 사진 불러오기 실패 시 다시 시도 ----------
+   통신이 잠깐 끊겨 사진 한 장이 깨져 보이는 경우, 최대 2번 다시 받아온다. */
+function initImageRetry() {
+  document.addEventListener("error", (e) => {
+    const img = e.target;
+    if (!img || img.tagName !== "IMG") return;
+    const src = img.getAttribute("src");
+    const tries = Number(img.dataset.retry || 0);
+    if (!src || src.startsWith("data:") || src.startsWith("blob:") || tries >= 2) return;
+    img.dataset.retry = tries + 1;
+    setTimeout(() => { img.src = `${src.split("?")[0]}?retry=${tries + 1}`; }, 800 * (tries + 1));
+  }, true);   // 이미지 오류는 위로 전달되지 않아서 캡처 단계에서 받는다
 }
 
 /* ---------- 사진 확대 ---------- */
