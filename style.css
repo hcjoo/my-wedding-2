@@ -420,9 +420,23 @@ button, input, textarea { font: inherit; color: inherit; }
 .lightbox {
   position: fixed; inset: 0; z-index: 70; display: grid; place-items: center;
   background: rgba(1,4,9,.92); padding: 16px; cursor: zoom-out;
+  touch-action: pinch-zoom; overscroll-behavior: contain;   /* 밀어 넘길 때 뒤 화면이 따라 움직이지 않게 */
 }
 .lightbox[hidden] { display: none; }
-.lightbox img { max-height: 90vh; border-radius: 6px; border: 1px solid var(--line); }
+.lightbox img { max-width: 100%; max-height: 90vh; border-radius: 6px; border: 1px solid var(--line);
+  user-select: none; -webkit-user-drag: none; }
+.lightbox__nav {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 1;
+  border: 0; background: none; color: #fff; opacity: .7; cursor: pointer;
+  font-size: 40px; line-height: 1; padding: 14px 12px;
+}
+.lightbox__nav--prev { left: 0; }
+.lightbox__nav--next { right: 0; }
+.lightbox__nav[hidden], .lightbox__count[hidden] { display: none; }
+.lightbox__count {
+  position: absolute; left: 0; right: 0; bottom: calc(18px + env(safe-area-inset-bottom));
+  text-align: center; color: var(--dim); font-family: var(--mono); font-size: 12px;
+}
 
 @media (prefers-reduced-motion: reduce) {
   /* 회전은 핵심 연출이라 유지하되 천천히, 깜빡임·글리치 등은 끔 */

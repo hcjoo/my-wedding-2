@@ -664,14 +664,69 @@ function renderGallery() {
 
 /* ---------- 사진 확대 ---------- */
 function initLightbox() {
-  const lb = $("#lightbox");
+  const lb = $("#lightbox"), view = $("#lightbox-img"), count = $("#lightbox-count");
+  const prevBtn = $("#lightbox-prev"), nextBtn = $("#lightbox-next");
+  let list = [], idx = 0, pushed = false;
+
+  const show = (i) => {
+    idx = (i + list.length) % list.length;
+    view.src = list[idx];
+    const many = list.length > 1;
+    prevBtn.hidden = nextBtn.hidden = count.hidden = !many;
+    if (many) count.textContent = `${idx + 1} / ${list.length}`;
+  };
+  const hide = () => { lb.hidden = true; view.removeAttribute("src"); };
+  // 닫을 때는 열면서 쌓아둔 기록 한 칸을 되돌린다 (뒤로가기와 같은 경로)
+  const close = () => { if (pushed) history.back(); else hide(); };
+
   document.addEventListener("click", (e) => {
     const img = e.target.closest("[data-zoom]");
     if (!img) return;
-    $("#lightbox-img").src = img.src;
+    // 같은 묶음(결혼 사진 전체, 또는 한 기록 안의 사진들)끼리 넘겨 본다
+    const group = img.closest("#gallery-grid, .commit__photos");
+    const imgs = group ? [...group.querySelectorAll("[data-zoom]")] : [img];
+    list = imgs.map((el) => el.src);
+    show(Math.max(0, imgs.indexOf(img)));
     lb.hidden = false;
+    // 뒤로가기가 청첩장을 벗어나지 않고 사진만 닫도록 기록을 한 칸 쌓는다
+    history.pushState({ lightbox: true }, "");
+    pushed = true;
   });
-  lb.addEventListener("click", () => (lb.hidden = true));
+  window.addEventListener("popstate", () => {
+    if (lb.hidden) return;
+    pushed = false;
+    hide();
+  });
+
+  prevBtn.addEventListener("click", (e) => { e.stopPropagation(); show(idx - 1); });
+  nextBtn.addEventListener("click", (e) => { e.stopPropagation(); show(idx + 1); });
+
+  // 좌우로 밀어 넘기기
+  let start = null, swiped = false;
+  lb.addEventListener("touchstart", (e) => {
+    swiped = false;
+    start = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+  }, { passive: true });
+  lb.addEventListener("touchend", (e) => {
+    if (!start || e.touches.length) { start = null; return; }
+    const dx = e.changedTouches[0].clientX - start.x;
+    const dy = e.changedTouches[0].clientY - start.y;
+    start = null;
+    if (list.length < 2 || Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    swiped = true;
+    show(dx < 0 ? idx + 1 : idx - 1);
+  }, { passive: true });
+
+  lb.addEventListener("click", () => {
+    if (swiped) { swiped = false; return; }   // 밀어 넘긴 직후의 탭은 닫기로 치지 않는다
+    close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (lb.hidden) return;
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowLeft") show(idx - 1);
+    if (e.key === "ArrowRight") show(idx + 1);
+  });
 }
 
 /* ---------- 스크롤 시 명령어 타이핑 (장식) ---------- */
